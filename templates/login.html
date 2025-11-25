@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='images/calavera.jpg') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.css"
+        integrity="sha512-DIW4FkYTOxjCqRt7oS9BFO+nVOwDL4bzukDyDtMO7crjUZhwpyrWBFroq+IqRe6VnJkTpRAS6nhDvf0w+wHmxg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"
+        integrity="sha512-Zq9o+E00xhhR/7vJ49mxFNJ0KQw1E1TMWkPTxrWcnpfEFDEXgUiwJHIKit93EW/XxE31HSI5GEOW06G6BF1AtA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <title>Login</title>
+</head>
+
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <script>
+        {% for category, message in messages %}
+        var mensaje = '{{ message }}';
+        var categoria = '{{ category }}';
+
+        if (categoria === 'success') {
+            iziToast.success({
+                title: 'OK',
+                message: mensaje,
+            });
+        } else if (categoria === 'error') {
+            iziToast.error({
+                title: 'Error',
+                message: mensaje,
+            });
+        }
+        {% endfor %}
+    </script>
+    {% endif %}
+    {% endwith %}
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form action="{{ url_for('register') }}" method="post">
+                <h1>Create Account</h1>
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                <input type="text" placeholder="Name" name="username" required>
+                <input type="email" placeholder="Email" name="correo" required>
+                <input type="password" placeholder="Contraseña" name="password" required>
+                <input type="password" placeholder="Confirm Password" name="confirmation" required>
+                <input type="submit" value="Sign Up">
+            </form>
+        </div>
+        <div class="form-container sign-in">
+            <form action="/login" method="post">
+                <h1>Iniciar Sesión</h1>
+                <input type="email" name="email" placeholder="Email">
+                <input type="password" name="password" placeholder="Password">
+                <button>Iniciar</button>
+                <div>
+                    <br>
+                    <h3>No tienes una cuenta? Regístrate <a href="/register"
+                            style="color: blue; font-size: inherit;">aquí</a></h3>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Enter your personal details to use all of site features</p>
+                    <button class="hidden" id="login">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Bienvenido a SyntaxTerror!</h1>
+                    <p>El sitio web para chatear favorito de los programadores, perritos y pokemon.</p>
+                    <br>
+                    <i class="fa-solid fa-skull-crossbones" style="font-size: 100px;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

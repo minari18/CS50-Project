@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chat - SyntaxTerror</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='images/calavera.jpg') }}">
+    <link rel="stylesheet" href="../static/css/login_page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* Aquí puedes agregar o importar estilos adicionales según sea necesario */
+        /* Estilo general del scroll */
+        h2 {
+
+            font-family: 'Times New Roman', Times, serif !important;
+
+
+        }
+
+        body {
+            /* Fondo del scroll */
+            scrollbar-color: #2b2b2b #444;
+            /* color del thumb y color del track */
+            scrollbar-width: thin;
+
+            /* grosor del scroll */
+        }
+
+        /* Estilo del scroll para navegadores basados en Webkit (Chrome, Safari) */
+        body::-webkit-scrollbar {
+            width: 12px;
+            /* ancho del scroll */
+        }
+
+        body::-webkit-scrollbar-track {
+            background: #444;
+            /* color del track */
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background-color: #2b2b2b;
+            /* color del thumb */
+            border-radius: 10px;
+            /* radio del borde del thumb */
+            border: 3px solid #444;
+            /* espacio alrededor del thumb */
+        }
+
+        .img-user {
+            border-radius: 9.25rem !important;
+            width: 70% !important;
+        }
+
+        .margin-chat {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .join-li {
+            text-align: center !important;
+            padding: 5px 5px 5px 5px !important;
+            background-color: #454037 !important;
+        }
+
+        .username-chat {
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.375rem;
+            color: var(--header-primary);
+            display: inline;
+            vertical-align: baseline;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            color: #DBDEE1 !important;
+        }
+
+        .timestap-chat {
+            font-size: .75rem;
+            line-height: 1.375rem;
+            color: var(--text-muted);
+            vertical-align: baseline;
+            font-weight: 500;
+            margin-left: .25rem;
+            color: #8F9BA4 !important;
+        }
+
+        .message-chat {
+            color: #DBDEE1 !important;
+            font-size: .9rem;
+        }
+
+        .chat-messages {
+            flex-grow: 1 !important;
+            padding: 10px;
+            overflow-y: auto !important;
+        }
+
+        .chat-container {
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inputdiscord {
+            border-radius: 4px;
+            color: #969696;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: 500;
+            margin: 10px;
+            outline: none;
+            padding: 6px;
+            text-align: left;
+            width: calc(100% - 20px);
+            background-color: #202225;
+            border: none;
+        }
+
+        @media (max-height: 800px) {
+            ul {
+                max-height: 500px !important;
+
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root">
+        <div id="discord-app">
+
+            <div id="content-navigator">
+                <div id="current-user-control">
+                    <div id="current-user">
+                        <button id="current-user-menu-button" type="button">
+                            <div class="user-icon" style="background-image: url({{pfp}});"></div>
+                        </button>
+                        <div id="current-user-details">
+                            <label id="current-user-username">{{username}}</label>
+                            <!-- <label id="current-user-id">#1234</label> -->
+                        </div>
+                        <div id="current-user-control-buttons">
+                            <!-- <button class="current-user-control-button">
+                                <i class="fa-solid fa-microphone"></i>
+                                <div class="tooltip top">Mute</div>
+                            </button>
+                            <button class="current-user-control-button">
+                                <i class="fa-solid fa-headphones"></i>
+                                <div class="tooltip top">Deafen</div>
+                            </button> -->
+                            <!-- <button class="current-user-control-button">
+                                <i class="fa-solid fa-gear"></i>
+                                <div class="tooltip top">User Settings</div>
+                            </button> -->
+                            <form action="/logout" method="get">
+                                <button type="submit"
+                                    style="background-color: gray; color: white; border: none; padding: 10px 20px; cursor: pointer;">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-navigator-section">
+                    <!-- <h2 style="color: #969696;">Crear Sala</h2>
+                    <form action="{{ url_for('create_room') }}" method="post">
+                        <input class="inputdiscord" type="text" name="room_name" placeholder="Nombre de la Sala"
+                            required>
+                        <button type="submit">Crear</button>
+                    </form>
+
+                    <h2 style="color: #969696;">Unirse a Sala</h2>
+                    <form action="{{ url_for('room_join') }}" method="post">
+                        <input class="inputdiscord" type="text" name="room_code" placeholder="Código de Sala" required>
+                        <button type="submit">Unirse</button>
+                    </form> -->
+                    <h2 style="color: #969696;">Crear Sala </h2>
+                    <form action="{{ url_for('create_room') }}" method="post">
+
+                        <div class="row">
+                            <div class="col-lg-10">
+                                <input class="inputdiscord" type="text" name="room_name" placeholder="Nombre de la Sala"
+                                    required style="background-color:#202225; border:none;">
+                            </div>
+                            <div class="col-lg-2">
+                                <button type="submit"
+                                    style="border: none; background: none; font-size: 1.2rem;margin: 10px;margin-left: -1rem;"><i
+                                        style="color: #969696;" class="fa-solid fa-plus"></i></button>
+
+                            </div>
+                        </div>
+
+                    </form>
+
+                    <h2 style="color: #969696;">Unirse a Sala</h2>
+                    <form action="{{ url_for('room_join') }}" method="post">
+                        <div class="row">
+                            <div class="col-lg-10">
+                                <input class="inputdiscord" type="text" name="room_code" placeholder="Código de Sala"
+                                    required style="background-color:#202225; border:none;">
+                            </div>
+                            <div class="col-lg-2">
+                                <button type="submit"
+                                    style="border: none; background: none; font-size: 1.2rem; margin: 10px; margin-left: -1rem;"><i
+                                        style="color: #969696;" class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+
+                    </form>
+                    <div id="direct-messages">
+                        <div id="direct-messages-header">
+                            <h3 id="direct-messages-title">Salas: </h3>
+                            <button id="direct-messages-add-button" type="button">
+                                <!-- <i class="fa-solid fa-plus"></i> -->
+                                <!-- <div class="tooltip top">Create DM</div> -->
+                            </button>
+                        </div>
+                        <div id="direct-messages-items">
+                            {% for room in rooms %}
+
+                            <a href="{{ url_for('chat', room_code=room['code']) }}" style="text-decoration: none;">
+                                <div class="direct-messages-item content-navigator-button">
+                                    <!-- Esto se le está aplicando a todas las salas-->
+                                    {% if room.gimg is none %}
+                                    <div class="user-icon"
+                                        style="background-image: url('../static/images/DefaultG.png');">
+                                    </div>
+                                    {% else %}
+                                    <div class="user-icon" style="background-image: url({{room.gimg}});">
+                                    </div>
+                                    {% endif %}
+                                    <div class="direct-messages-item-user-info">
+                                        <p class="direct-messages-item-username">{{ room['name'] }}</p>
+                                    </div>
+                                    <!-- <button class="direct-messages-item-close-button" type="button">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button> -->
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="active-content">
+                <div class="container mt-5">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <!-- Aqui van los mensajes -->
+                            <div class="chat-container">
+                                <div class="chat-header" style="font-size: 25px; text-align: center; color: #969696;">
+                                    {{ room_name }} (Code: {{ room_code }})
+                                </div>
+                                <div class="chat-messages" id="chat-messages">
+                                    <ul id="messages"
+                                        style="list-style:none; padding: 10px; color: white; max-height: 700px; overflow-y: auto; overflow-x: hidden;">
+                                        {% for message in messages %}
+                                        <!-- Son los mensajes del emisor -->
+                                        {% if message.username == username %}
+
+                                        <div class="media media-chat margin-chat media-chat-reverse"
+                                            style="text-align: right;">
+                                            <div class="media-body">
+                                                <div class="container">
+                                                    <div class="row">
+
+                                                        <div class="col-lg-11">
+                                                            <div class="row">
+                                                                <span class="username-chat">
+                                                                    {{ message.username }}
+                                                                    <span class="timestap-chat">
+                                                                        {{ message.timestamp }}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                            <div class="row">
+                                                                <span class="message-chat">{{ message.message }}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-1" style="    margin-left: -1.85rem;">
+                                                            <img src={{pfp}} class="img-fluid img-user" alt=""
+                                                                style="width: 10%;">
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <!-- son los mensajes del receptor -->
+
+                                        <div class="media media-chat margin-chat">
+                                            <div class="media-body">
+                                                <div class="container">
+                                                    <div class="row">
+                                                        <div class="col-lg-1" style="margin-right: -2rem;">
+                                                            <img src='../static/images/Default.png'
+                                                                class="img-fluid img-user" alt="" style="width: 10%;">
+                                                        </div>
+                                                        <div class="col-lg-10">
+                                                            <div class="row">
+                                                                <span class="username-chat">
+                                                                    {{ message.username }}
+                                                                    <span class="timestap-chat">
+                                                                        {{ message.timestamp }}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                            <div class="row">
+                                                                <span class="message-chat">{{ message.message }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="chat-messages clearfix">
+                                <div class="chat-input">
+                                    <div class="input-group mb-0" style="display: flex; align-items: center;">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-lg-11">
+                                                    <input style="padding: 10px;" type="text" class="inputdiscord"
+                                                        id="myMessage" autocomplete="off"
+                                                        placeholder="Escribe tu mensaje aqui..."
+                                                        onkeydown="handleKey(event)">
+                                                </div>
+                                                <div class="col-lg-1">
+                                                    <a type="button" id="sendMessageButton"><i
+                                                            class="fa-solid fa-paper-plane"
+                                                            style="margin: 10px; font-size: 2rem; color:#969696;     margin-left: -1.5rem;"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <script>
+
+            var pfp = "{{pfp}}"
+
+            function handleKey(event) {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                }
+            }
+
+
+
+            var socket = io();
+            var room = "{{ room_code }}";
+            var username = "{{ username }}";
+
+            socket.emit('join', { username: username, room: room });
+
+            socket.on('message', function (data) {
+                // Imprimir mensaje del receptor
+                if (data.msg.includes('se ha unido a la sala')) {
+                    var messageElement = $('<li>').addClass('join-li').text(data.msg);
+                    $('#messages').append(messageElement);
+                } else {
+
+                    const fecha = new Date();
+                    const dia = fecha.getDate();
+                    const mes = fecha.getMonth() + 1; // Los meses van de 0 a 11, por lo tanto se suma 1
+                    const anio = fecha.getFullYear();
+
+                    const fechaFormateada = `${anio}-${mes}-${dia}`;
+
+                    var dataFixed = data.msg.replace(/'/g, '"');
+                    var menssageData = JSON.parse(dataFixed);
+
+                    var messageHtml2 = '<div class="media media-chat media-chat-reverse margin-chat" style="text-align: right;">' +
+                        '<div class="media-body">' +
+                        '<div class="container">' +
+                        '<div class="row">' +
+                        '<div class="col-lg-1" style="margin-right: -2rem;">' +
+                        '<img src="../static/images/Default.png" ' +
+                        'class="img-fluid img-user" alt="" style="width: 10%;">' +
+                        '</div>' +
+                        '<div class="col-lg-10">' +
+                        '<div class="row" style="text-align: left;     margin-left: 1px;">' +
+                        '<span class="username-chat">' +
+                        menssageData.username +
+                        '<span class="timestap-chat">' +
+                        fechaFormateada +
+                        '</span>' +
+                        '</span>' +
+                        '</div>' +
+                        '<div class="row" style="text-align: left;     margin-left: 1px;">' +
+                        '<span class="message-chat">' +
+                        menssageData.message +
+                        '</span>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+
+                    // Agregar el mensaje con HTML al elemento <li>
+                    $('#messages').append($('<li>').html(messageHtml2));
+                    messages.scrollTop = messages.scrollHeight;
+                    $('#myMessage').val('');
+
+                }
+
+                messages.scrollTop = messages.scrollHeight;
+            });
+
+            // Manejar cuando un usuario abandona la sala
+            socket.on('user_left', function (data) {
+                console.log("Usuario entrando!!!")
+                $('#messages').append($('<li>').text(data.msg));
+
+            });
+
+            function sendMessage() {
+                var message = $('#myMessage').val();
+                if (message.trim() !== '') {
+
+
+                    socket.emit('message', { username: username, room: room, message: message });
+                    // Imprimir mensaje del emisor
+                    var data = { msg: message, username: username };
+                    // Crear el contenido HTML para el mensaje
+
+                    const fecha = new Date();
+                    const dia = fecha.getDate();
+                    const mes = fecha.getMonth() + 1; // Los meses van de 0 a 11, por lo tanto se suma 1
+                    const anio = fecha.getFullYear();
+
+                    const fechaFormateada = `${anio}-${mes}-${dia}`;
+
+                    var messageHtml = '<div class="media media-chat media-chat-reverse margin-chat" style="text-align: right;">' +
+                        '<div class="media-body">' +
+                        '<div class="container">' +
+                        '<div class="row">' +
+                        '<div class="col-lg-11">' +
+                        '<div class="row">' +
+                        '<span class="username-chat">' + data.username + '<span class="timestap-chat">' + fechaFormateada + '</span>' + '</span>' +
+                        '</div>' +
+                        '<div class="row">' +
+                        '<span class="message-chat">' + data.msg + '</span>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-lg-1" style="    margin-left: -1.85rem;">' +
+                        '<img src="' + pfp + '" class="img-fluid img-user" alt="" style="width: 10%;">' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+
+                    // Agregar el mensaje con HTML al elemento <li>
+                    $('#messages').append($('<li>').html(messageHtml));
+                    messages.scrollTop = messages.scrollHeight;
+                    $('#myMessage').val('');
+                }
+            }
+
+
+
+            //evento boton
+            var sendButton = document.getElementById('sendMessageButton');
+            sendButton.addEventListener('click', function () {
+                sendMessage();
+            });
+
+
+            // Manejar la salida del usuario
+            window.onbeforeunload = function () {
+                messages.scrollTop = messages.scrollHeight;
+                socket.emit('leave', { username: username, room: room });
+            }
+
+
+            // Obtener la foto de perfil a través de cloudinary
+            const imagePreview = document.getElementById('img-preview');
+            const imageUploader = document.getElementById('img-uploader');
+            const imageCloud = document.getElementById('imagecloud');
+
+            const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/dn0soxgwk/image/upload`
+            const CLOUDINARY_UPLOAD_PRESET = 'rgvmndcw';
+
+            imageUploader.addEventListener('change', async (e) => {
+                // console.log(e);
+                const file = e.target.files[0];
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                // Send to cloudianry
+                const res = await axios.post(
+                    CLOUDINARY_URL,
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        },
+                    }
+                );
+                console.log(res);
+                imagePreview.src = res.data.secure_url;
+                imageCloud.value = res.data.secure_url;
+            });
+        </script>
+</body>
+
+</html>
