@@ -1,6 +1,8 @@
+import os
 import random
 import string
 from cs50 import SQL
+from dotenv import load_dotenv
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_mail import Mail, Message
 from flask_session import Session
@@ -10,11 +12,12 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required
 
 # Configure application
+load_dotenv()
 app = Flask(__name__)
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
-app.config["MAIL_USERNAME"] = "syntaxterror9@gmail.com"
-app.config["MAIL_PASSWORD"] = "vfzi bjat dsjt trtd"
+app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
 app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USE_SSL"] = False
 app.config["SECRET_KEY"] = "secret_key"
@@ -54,6 +57,7 @@ def index():
     # print("ye")
     # return render_template("index.html", rooms=rooms)
     return render_template("index.html")
+
 
 # Register
 @app.route("/register", methods=["GET", "POST"])
