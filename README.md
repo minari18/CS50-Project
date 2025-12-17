@@ -44,8 +44,4 @@ necesitan ser instaladas para que funcione correctamente.
 Por último, app.py es el archivo python de la aplicación donde se configura la aplicación mediante flask. Obsérvese
 que se utiliza la librería flask-socketio para tratar con los web-sockets.
 
-Implementaciones futuras:
-- Chatbot utilizando la librería openai
-- Reproducción de música utilizando yt-dlp y ffmpeg
-- Edición de nombres de usuario y salas, y fotos de usuarios y salas.
-- Mejora del estilo (hacerlo responsivo, mejorar el css...)
+EDIT: Este proyecto ganó la categoría "Red Social" en la feria del ciclo Y24C1 de CS50x.ni!
